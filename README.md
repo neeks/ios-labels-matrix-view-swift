@@ -9,6 +9,18 @@ Quite useful for showing tabular data inside table cells.
 The Swift version is lot more concise and was fun to work on.
 Please leave feedback or requests.
 
-Screenshot
-----------------------
+
+Current state
+------------------
+![Screenshot](https://raw.githubusercontent.com/neeks/ios-labels-matrix-view-swift/master/preview.png)
+
+
+
+
+
+For the Objective-C version please try here 
+https://github.com/neeks/ios-labels-matrix-view
+
+which looks like this:
+
 ![Screenshot](https://raw.githubusercontent.com/neeks/ios-labels-matrix-view/master/preview.png)
