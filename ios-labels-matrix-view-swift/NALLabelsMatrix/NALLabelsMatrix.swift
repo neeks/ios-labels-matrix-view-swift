@@ -33,14 +33,26 @@ class NALLabelsMatrixView : UIView {
         
         let rowHeight:Int = 30
         var dx:Int = 0
+        var maxHeight:Int = 30
+        
+        var rowColumns:[UILabel] = []
+        
+        //STYLE TO SET MARGINS AND ALIGNMENT
+        let paragraphStyle:NSMutableParagraphStyle = NSMutableParagraphStyle.init()
+        paragraphStyle.alignment = .natural
+        paragraphStyle.headIndent = 10.0
+        paragraphStyle.firstLineHeadIndent = 10.0
+        paragraphStyle.tailIndent = -10.0
         
         //CREATE THE ITEMS/COLUMNS OF THE ROW
         for i in 0..<record.count {
             let colWidth:Int = self.columnWidths[i]
             let cellRect:CGRect = CGRect.init(x: dx, y: self.dy, width: colWidth, height: rowHeight)
             
+            
             //ADJUST X FOR BORDER OVERLAPPING BETWEEN COLUMNS
             dx += colWidth - 1
+            
             
             //CREATE THE LABEL TO BE USED AS CELL
             let column:UILabel = UILabel.init(frame: cellRect)
@@ -49,37 +61,38 @@ class NALLabelsMatrixView : UIView {
             column.font = UIFont.init(name: "Helvetica", size: 12.0)
             
             
-            //SET LEFT RIGHT MARGINS & ALIGNMENT FOR THE LABEL
-            let paragraphStyle:NSMutableParagraphStyle = NSMutableParagraphStyle.init()
-            paragraphStyle.alignment = .natural
-            paragraphStyle.headIndent = 10.0
-            paragraphStyle.firstLineHeadIndent = 10.0
-            paragraphStyle.tailIndent = -10.0
-            
             //SPECIAL TREATMENT FOR THE FIRST ROW
             if(self.numRows == 0){
                 paragraphStyle.alignment = .center
                 column.backgroundColor = self.headerColour
             }
             let attrText:NSAttributedString = NSAttributedString.init(string: record[i], attributes: [NSParagraphStyleAttributeName: paragraphStyle])
-            
-            
-            //USED TO FIND HEIGHT OF LONGEST LABEL
-            //
-            //MAKE THE LABEL WIDTH SAME AS COLUMN'S WIDTH
-            //
-            //USED FOR SETTING THE NEXT COLUMN X POSITION
-            //
-            
             column.attributedText = attrText
+            column.lineBreakMode = .byWordWrapping
+            column.numberOfLines = 0
+            column.sizeToFit()
+            
+            
+            //HEIGHT OF LONGEST LABEL
+            if(column.frame.height > CGFloat(maxHeight)){
+                maxHeight = Int(column.frame.height)+15
+            }
+            
+            rowColumns.append(column)
             self.addSubview(column)
         }
         
-        //MAKE ALL THE LABELS OF SAME HEIGHT AND THEN ADD TO VIEW
+        //MAKE ALL THE LABELS OF SAME HEIGHT AND MATCH COLUMN-WIDTH
+        for i in 0..<rowColumns.count {
+            var tempFrame:CGRect = rowColumns[i].frame
+            tempFrame.size.width = CGFloat(self.columnWidths[i])
+            tempFrame.size.height = CGFloat(maxHeight)
+            rowColumns[i].frame = tempFrame
+        }
         //
         
         //ADJUST Y FOR BORDER OVERLAPPING BETWEEN ROWS
-        self.dy += rowHeight - 1
+        self.dy += maxHeight - 1
         
         self.numRows += 1
         
